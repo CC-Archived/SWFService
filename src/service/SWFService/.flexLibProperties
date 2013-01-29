@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
+  <includeClasses>
+    <classEntry path="com.codecatalyst.data.EntitySet"/>
+    <classEntry path="com.codecatalyst.swfservice.SWFService"/>
+    <classEntry path="com.codecatalyst.swfservice.context.proxy.SWFServiceListenerProxy"/>
+    <classEntry path="com.codecatalyst.swfservice.context.proxy.SWFServiceOperationProxy"/>
+    <classEntry path="com.codecatalyst.swfservice.context.SWFServiceContext"/>
+    <classEntry path="com.codecatalyst.swfservice.context.proxy.SWFServiceProxy"/>
+    <classEntry path="com.codecatalyst.swfservice.context.proxy.data.Descriptor"/>
+    <classEntry path="com.codecatalyst.swfservice.context.proxy.data.Variable"/>
+    <classEntry path="com.codecatalyst.swfservice.context.proxy.data.Accessor"/>
+    <classEntry path="com.codecatalyst.swfservice.context.proxy.data.Method"/>
+    <classEntry path="com.codecatalyst.swfservice.context.proxy.data.MethodParameter"/>
+    <classEntry path="com.codecatalyst.swfservice.context.proxy.data.ReturnValue"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>

@@ -1,0 +1,62 @@
+<!--
+   Suggested Usage:
+      ant clean pacakge
+   
+   The goal of this build the JavaScript client and AS3 service library projects from source code and package them for distribution.
+-->
+<project name="SWFService" basedir="." default="package">
+	
+	<!-- Properties -->
+	
+	<property file="${basedir}/build.properties" />
+	
+	<property name="src.loc" location="${basedir}/src" />
+	
+	<property name="dist.loc" location="${basedir}/dist" />
+	
+	<!-- Targets -->
+	
+	<target name="clean" description="Remove artifacts in build directory from previous builds.">
+		<delete dir="${dist.loc}" />
+		
+		<ant dir="src/client" target="clean" inheritAll="false" />
+		<ant dir="src/service" target="clean" inheritAll="false" />
+	</target>
+	
+	<target name="init" description="Initialize build directory.">
+		<echo message="Building ${ant.project.name} version: ${build.version}"/>
+		
+		<mkdir dir="${dist.loc}" />
+		<mkdir dir="${dist.loc}/client" />
+		<mkdir dir="${dist.loc}/service" />
+	</target>
+	
+	<target name="build" depends="init" description="Build JavaScript client and AS3 service library projects from source code.">
+		<ant dir="src/client" inheritAll="false" />
+		<ant dir="src/service" inheritAll="false" />
+	</target>
+	
+	<target name="package" depends="build" description="Package for distribution.">
+		
+		<copy todir="${dist.loc}">
+			<filelist dir="${basedir}">
+				<file name="README.md" />
+				<file name="LICENSE" />
+			</filelist>
+		</copy>
+		<copy todir="${dist.loc}/client">
+			<fileset dir="${src.loc}/client/dist"></fileset>
+		</copy>
+		<copy todir="${dist.loc}/service">
+			<fileset dir="${src.loc}/service/dist"></fileset>
+		</copy>
+		
+		<zip destfile="${dist.loc}/${build.fileName}.zip">
+			<zipfileset dir="${dist.loc}" prefix="${build.fileName}">
+				<exclude name="**/*.zip" />
+			</zipfileset>
+		</zip>
+		
+	</target>
+
+</project>

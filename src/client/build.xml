@@ -1,0 +1,73 @@
+<!--
+   Suggested Usage:
+      ant clean build
+   
+   The goal of this build is compile the CoffeeScript source code to JavaScript and generate concatenated and minimized distributions of the library.
+-->
+<project name="SWFService JavaScript Client" basedir="." default="build">
+	
+	<!-- Properties -->
+	
+	<property file="${basedir}/build.properties" />
+	
+	<property name="src.loc" location="${basedir}/SWFService/src" />
+	<property name="lib.loc" location="${basedir}/SWFService/lib" />
+	
+	<property name="dist.loc" location="${basedir}/dist" />
+	
+	<!-- SDK Tool Configuration -->
+	
+	<condition property="coffeeExecutable" value="coffee.cmd">
+		<os family="windows" />
+	</condition>
+	<condition property="coffeeExecutable" value="coffee">
+		<os family="unix" />
+	</condition>
+	
+	<condition property="yuiCompressorExecutable" value="yuicompressor.cmd">
+		<os family="windows"/>
+	</condition>
+	<condition property="yuiCompressorExecutable" value="yuicompressor">
+		<os family="unix"/>
+	</condition>
+	
+	<!-- Targets -->
+	
+	<target name="clean" description="Remove artifacts in build directory from previous builds.">
+		<delete dir="${dist.loc}" />
+	</target>
+	
+	<target name="init" description="Initialize build directory.">
+		<echo message="Building ${ant.project.name} version: ${build.version}"/>
+		
+		<mkdir dir="${dist.loc}" />
+	</target>
+	
+	<target name="compile" depends="init" description="Compile the CoffeeScript code to JavaScript.">
+		<echo message="Compiling CoffeeScript..." />
+		<exec dir="${src.loc}" executable="${coffeeExecutable}">
+			<arg line="-c -o js coffee" />
+		</exec>
+	</target>
+	
+	<target name="build" depends="compile" description="Build debug and deployment distributions of the library.">
+		<echo message="Concatenating JavaScript files..." />
+		<concat destfile="${dist.loc}/${build.filename.debug}" encoding="UTF-8" outputencoding="UTF-8">
+			<header>${build.copyright.notice}</header>
+			<filelist dir=".">
+				<!-- NOTE: Order is important - driven by class dependencies. -->
+				<file name="${lib.loc}/promise.coffee/promise.js" />
+				<file name="${src.loc}/js/SWFService.js" />
+			</filelist>
+		</concat>
+		
+		<echo message="Minifying concatenated JavaScript file..." />
+		<exec dir="dist" executable="${yuiCompressorExecutable}">
+			<arg line="${build.filename.debug} -o ${build.filename.deploy} --charset utf-8" />
+		</exec>
+		
+		<!-- Convert EOL characters to match local OS conventions. -->
+		<fixcrlf srcdir="${dist.loc}" includes="**/*.js" />
+	</target>
+	
+</project>
