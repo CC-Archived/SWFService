@@ -117,15 +117,15 @@ SWFService
 	.get( swf, 'VideoPlayerService' )
 	.then( 
 		function ( videoPlayerService )
-			console.log( "Success:", videoPlayerService );
+			console.log( videoPlayerService );
 		),
 		function ( error ) {
-			console.log( "Failure:", error );
+			console.error( error.message );
 		}
 	);
 ```
 
-(where `swf` is a reference to the SWF instance in your HTML page).  
+where `swf` is a reference to the SWF instance in your HTML page, `VideoPlayerService` is the identifier used to register the service in the SWF.  You can optionally specify a timeout in milliseconds for acquiring the service as the third parameter.
 
 ### Methods
 
@@ -146,10 +146,10 @@ If your method is asynchronous and returns an [AsyncToken](http://help.adobe.com
 ```javascript
 videoPlayerService.load( videoId ).then(
 	function ( result ) {
-		console.log( 'Load succeeded!', result );
+		console.log( 'Load succeeded:', result );
 	},
 	function ( error ) {
-		console.log( 'Load failed!', error );
+		console.error( 'Load failed:', error.message );
 	}
 );
 ```
