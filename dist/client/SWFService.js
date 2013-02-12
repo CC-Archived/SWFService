@@ -3,9 +3,593 @@
  * Copyright (c) 2008-2013 [CodeCatalyst, LLC](http://codecatalyst.com)
  * Open source under the [MIT License](http://en.wikipedia.org/wiki/MIT_License).
  */
+
 /*!
  * [promise.coffee](http://github.com/CodeCatalyst/promise.coffee) v1.0
  * Copyright (c) 2012-2013 [CodeCatalyst, LLC](http://www.codecatalyst.com/).
  * Open source under the [MIT License](http://en.wikipedia.org/wiki/MIT_License).
  */
-(function(){var a,b,f,e,d,c;d=(typeof process!=="undefined"&&process!==null?process.nextTick:void 0)||(typeof setImmediate!=="undefined"&&setImmediate!==null)||function(g){return setTimeout(g,0)};e=function(g){return typeof g==="function"};f=(function(){function g(t,h){var j,q,p,l,s,r,o,i,k,n,m;this.promise=new b(this);o=[];k=false;l=false;r=null;s=null;if(!e(h)){h=function(u){throw u}}n=function(){var v,w,u;for(w=0,u=o.length;w<u;w++){v=o[w];v[s](r)}o=[]};m=function(u){o.push(u);if(l){n()}};j=function(v,u){t=h=null;s=v;r=u;l=true;n()};p=function(u){j("resolve",u)};q=function(u){j("reject",u)};i=function(w,v){k=true;try{if(e(w)){v=w(v)}if(v&&e(v.then)){v.then(p,q)}else{p(v)}}catch(u){q(u)}};this.resolve=function(u){if(!k){i(t,u)}};this.reject=function(u){if(!k){i(h,u)}};this.then=function(w,u){var v;if(e(w)||e(u)){v=new g(w,u);d(function(){return m(v)});return v.promise}return this.promise}}return g})();b=(function(){function g(h){this.then=function(j,i){return h.then(j,i)}}return g})();a=(function(){function g(){var h;h=new f();this.promise=h.promise;this.resolve=function(i){return h.resolve(i)};this.reject=function(i){return h.reject(i)}}return g})();c=typeof exports!=="undefined"&&exports!==null?exports:window;c.Deferred=a;c.defer=function(){return new a()}}).call(this);(function(){var b,e,f,a,d,i,c,g,j,h;j=(function(){function k(m){var l,n;l=function(){return new Date().getTime()};n=l();this.elapsed=function(){return l()-n};this.remaining=function(){return Math.max(m-this.elapsed(),0)};this.expired=function(){return this.elapsed()>m}}return k})();e=(function(){function k(l,m){this.entityClass=l;this.entityKeyProperty=m!=null?m:"id";this.entitiesByKey={}}k.prototype.add=function(l){var m;if(!(l instanceof this.entityClass)){throw new Error("Entity must be of type: "+this.entityClass.name+" to be added to this EntitySet.")}m=l[this.entityKeyProperty];if(this.exists(m)){throw new Error("An Entity with key: "+m+" already exists in this EntitySet.")}this.entitiesByKey[m]=l;return l};k.prototype.remove=function(l){if(this.contains(l)){delete this.entitiesByKey[l[this.entityKeyProperty]];return l}return null};k.prototype.removeAll=function(){this.entitiesByKey={}};k.prototype.get=function(l){return this.entitiesByKey[l]};k.prototype.find=function(l){var m;m=function(n){var p,o;for(p in l){o=l[p];if(n[p]!==o){return false}}return true};return this.match(m)};k.prototype.match=function(n){var l,m,p,o;p=[];o=this.entitiesByKey;for(m in o){l=o[m];if(n(l)){p.push(l)}}return p};k.prototype.contains=function(l){var m;m=l[this.entityKeyProperty];return this.exists(m)&&l===this.get(m)};k.prototype.exists=function(l){return this.entitiesByKey[l]!=null};k.prototype.toArray=function(){var o,l,m,n;o=[];n=this.entitiesByKey;for(m in n){l=n[m];o.push(l)}return o};return k})();b=(function(){function k(l,m){this.entityClass=l;this.entityKeyProperty=m!=null?m:"id";this.entities=new e(this.entityClass);this.pendingEntityRequestsByEntityId={}}k.prototype.get=function(n,q){var m,l,o,p,r=this;l=this.entities.get(n);if(l!=null){m=new Deferred();m.resolve(l);return m.promise}else{m=new Deferred();if(q!=null){setTimeout(function(){m.reject(new Error("Request for "+r.entityClass.name+" with "+r.entityKeyProperty+': "'+n+'" timed out.'))},q)}if((p=(o=this.pendingEntityRequestsByEntityId)[n])==null){o[n]=[]}this.pendingEntityRequestsByEntityId[n].push(m);return m.promise}};k.prototype.register=function(n){var o,m,p,q,l;this.entities.add(n);o=n[this.entityKeyProperty];p=this.pendingEntityRequestsByEntityId[o];for(q=0,l=p.length;q<l;q++){m=p[q];m.resolve(n)}delete this.pendingEntityRequestsByEntityId[o];return n};k.prototype.unregister=function(l){this.entities.remove(l);return l};return k})();g=(function(){function k(A,w,u){var m,l,y,v,s,x,p,o,n,z,C,B,t,r,q;this.id=w;l=function(D){return function(){return A.getServiceProperty(w,D)}};v=function(D){return function(E){A.setServiceProperty(w,D,E)}};y=function(D){return function(){var E;E=Array.prototype.slice.call(arguments);return A.executeServiceMethod(w,D,E)}};t=u.accessors;for(p=0,z=t.length;p<z;p++){m=t[p];Object.defineProperty(this,m.name,{writeable:m.access!=="readonly",get:l(m.name),set:v(m.name)})}r=u.variables;for(o=0,C=r.length;o<C;o++){x=r[o];Object.defineProperty(this,x.name,{get:l(x.name),set:v(x.name)})}q=u.methods;for(n=0,B=q.length;n<B;n++){s=q[n];this[s.name]=y(s.name)}if(u.isEventDispatcher){this.addEventListener=function(F,G,D,E,H){if(D==null){D=false}if(E==null){E=0}if(H==null){H=false}A.addServiceEventListener(w,F,G,D,E,H)};this.removeEventListener=function(E,F,D){if(D==null){D=false}A.removeServiceEventListener(w,E,F,D)}}}return k})();c=(function(){function k(p,o,m,n){var l;this.id=p;this.serviceId=o;this.methodName=m;this.args=n;l=new Deferred();this.promise=l.promise,this.resolve=l.resolve,this.reject=l.reject}return k})();i=(function(){function k(r,p,n,q,l,m,o){this.id=r;this.serviceId=p;this.eventType=n;this.listenerFunction=q;this.useCapture=l!=null?l:false;this.priority=m!=null?m:0;this.useWeakReference=o!=null?o:false}k.prototype.redispatch=function(l){return this.listenerFunction(l)};return k})();a=(function(){function k(l){this.id=l;this.serviceProxyRegistry=new b(g);this.serviceOperationProxies=new e(c);this.serviceEventListenerProxies=new e(i);return}k.prototype.get=function(m,l){return this.serviceProxyRegistry.get(m,l)};k.prototype.getServiceDescriptor=function(l){return this.swf.SWFServiceContext_getServiceDescriptor(l)};k.prototype.getServiceProperty=function(m,l){return this.swf.SWFServiceContext_getServiceProperty(m,l)};k.prototype.setServiceProperty=function(n,l,m){this.swf.SWFServiceContext_setServiceProperty(n,l,m)};k.prototype.executeServiceMethod=function(q,m,n){var p,o,l,r=this;o=this.swf.SWFServiceContext_executeServiceMethod(q,m,n);if(o.pending){l=new c(o.operationId,q,m,n);this.serviceOperationProxies.add(l);p=function(){return r.serviceOperationProxies.remove(l)};l.promise.then(p,p);return l.promise}return o.value};k.prototype.addServiceEventListener=function(p,o,q,l,n,r){var m;m=this.swf.SWFServiceContext_addServiceEventListener(p,o,l,n,r);this.serviceEventListenerProxies.add(new i(m,p,o,q,l,n,r))};k.prototype.removeServiceEventListener=function(o,m,p,l){var n;n=this.serviceEventListenerProxies.find({serviceId:o,eventType:m,listenerFunction:p,useCapture:l})[0];if(n!=null){this.swf.SWFServiceContext_removeServiceEventListener(o,n.id);this.serviceEventListenerProxies.remove(n)}};k.prototype.onServiceRegister=function(m,l){this.serviceProxyRegistry.register(new g(this,m,l))};k.prototype.onServiceExecuteComplete=function(p,m,o,n){var l;l=this.serviceOperationProxies.get(m);if(l!=null){l[o](n)}};k.prototype.onServiceEvent=function(n,l,m){return this.serviceEventListenerProxies.get(l).redispatch(m)};return k})();d=(function(){function k(){this.serviceContexts=new e(a)}k.prototype.add=function(l){return this.serviceContexts.add(l)};k.prototype.getById=function(l){return this.serviceContexts.get(l)};k.prototype.getBySWF=function(m,o){var l,n,q,p=this;l=new Deferred();q=new j(o);n=setInterval(function(){var s,u,t;try{u=m.SWFServiceContext_getId()}catch(r){}if(u!=null){clearInterval(n);s=p.serviceContexts.get(u);if((t=s.swf)==null){s.swf=m}l.resolve(s)}else{if(q.expired()){clearInterval(n);l.reject(new Error("SWFService timed out attempting to access the requested SWF."))}}},100);return l.promise};return k})();f=(function(){function k(){this.serviceContextManager=new d()}k.prototype.get=function(l,n,m){var o;if(m==null){m=30000}o=new j(m);return this.serviceContextManager.getBySWF(l,o.remaining()).then(function(p){return p.get(n,o.remaining())})};k.prototype.onInit=function(l){this.serviceContextManager.add(new a(l))};k.prototype.onServiceRegister=function(n,m,l){this.serviceContextManager.getById(n).onServiceRegister(m,l)};k.prototype.onServiceExecuteComplete=function(p,o,l,n,m){this.serviceContextManager.getById(p).onServiceExecuteComplete(o,l,n,m)};k.prototype.onServiceEvent=function(o,n,l,m){return this.serviceContextManager.getById(o).onServiceEvent(n,l,m)};return k})();h=typeof exports!=="undefined"&&exports!==null?exports:window;h.SWFService=new f()}).call(this);
+// Generated by CoffeeScript 1.4.0
+
+(function() {
+  var Deferred, Promise, Resolver, isFunction, nextTick, target;
+
+  nextTick = (typeof process !== "undefined" && process !== null ? process.nextTick : void 0) || (typeof setImmediate !== "undefined" && setImmediate !== null) || function(task) {
+    return setTimeout(task, 0);
+  };
+
+  isFunction = function(value) {
+    return typeof value === 'function';
+  };
+
+  Resolver = (function() {
+
+    function Resolver(onResolved, onRejected) {
+      var complete, completeRejected, completeResolved, completed, completionAction, completionValue, pendingResolvers, process, processed, propagate, schedule;
+      this.promise = new Promise(this);
+      pendingResolvers = [];
+      processed = false;
+      completed = false;
+      completionValue = null;
+      completionAction = null;
+      if (!isFunction(onRejected)) {
+        onRejected = function(error) {
+          throw error;
+        };
+      }
+      propagate = function() {
+        var pendingResolver, _i, _len;
+        for (_i = 0, _len = pendingResolvers.length; _i < _len; _i++) {
+          pendingResolver = pendingResolvers[_i];
+          pendingResolver[completionAction](completionValue);
+        }
+        pendingResolvers = [];
+      };
+      schedule = function(pendingResolver) {
+        pendingResolvers.push(pendingResolver);
+        if (completed) {
+          propagate();
+        }
+      };
+      complete = function(action, value) {
+        onResolved = onRejected = null;
+        completionAction = action;
+        completionValue = value;
+        completed = true;
+        propagate();
+      };
+      completeResolved = function(result) {
+        complete('resolve', result);
+      };
+      completeRejected = function(reason) {
+        complete('reject', reason);
+      };
+      process = function(callback, value) {
+        processed = true;
+        try {
+          if (isFunction(callback)) {
+            value = callback(value);
+          }
+          if (value && isFunction(value.then)) {
+            value.then(completeResolved, completeRejected);
+          } else {
+            completeResolved(value);
+          }
+        } catch (error) {
+          completeRejected(error);
+        }
+      };
+      this.resolve = function(result) {
+        if (!processed) {
+          process(onResolved, result);
+        }
+      };
+      this.reject = function(error) {
+        if (!processed) {
+          process(onRejected, error);
+        }
+      };
+      this.then = function(onResolved, onRejected) {
+        var pendingResolver;
+        if (isFunction(onResolved) || isFunction(onRejected)) {
+          pendingResolver = new Resolver(onResolved, onRejected);
+          nextTick(function() {
+            return schedule(pendingResolver);
+          });
+          return pendingResolver.promise;
+        }
+        return this.promise;
+      };
+    }
+
+    return Resolver;
+
+  })();
+
+  Promise = (function() {
+
+    function Promise(resolver) {
+      this.then = function(onFulfilled, onRejected) {
+        return resolver.then(onFulfilled, onRejected);
+      };
+    }
+
+    return Promise;
+
+  })();
+
+  Deferred = (function() {
+
+    function Deferred() {
+      var resolver;
+      resolver = new Resolver();
+      this.promise = resolver.promise;
+      this.resolve = function(result) {
+        return resolver.resolve(result);
+      };
+      this.reject = function(error) {
+        return resolver.reject(error);
+      };
+    }
+
+    return Deferred;
+
+  })();
+
+  target = typeof exports !== "undefined" && exports !== null ? exports : window;
+
+  target.Deferred = Deferred;
+
+  target.defer = function() {
+    return new Deferred();
+  };
+
+}).call(this);
+// Generated by CoffeeScript 1.4.0
+(function() {
+  var DeferredEntityRegistry, EntitySet, SWFService, SWFServiceContext, SWFServiceContextManager, SWFServiceEventListenerProxy, SWFServiceOperationProxy, SWFServiceProxy, Timer, target;
+
+  Timer = (function() {
+
+    function Timer(duration) {
+      var now, start;
+      now = function() {
+        return new Date().getTime();
+      };
+      start = now();
+      this.elapsed = function() {
+        return now() - start;
+      };
+      this.remaining = function() {
+        return Math.max(duration - this.elapsed(), 0);
+      };
+      this.expired = function() {
+        return this.elapsed() > duration;
+      };
+    }
+
+    return Timer;
+
+  })();
+
+  EntitySet = (function() {
+
+    function EntitySet(entityClass, entityKeyProperty) {
+      this.entityClass = entityClass;
+      this.entityKeyProperty = entityKeyProperty != null ? entityKeyProperty : 'id';
+      this.entitiesByKey = {};
+    }
+
+    EntitySet.prototype.add = function(entity) {
+      var entityKey;
+      if (!(entity instanceof this.entityClass)) {
+        throw new Error("Entity must be of type: " + this.entityClass.name + " to be added to this EntitySet.");
+      }
+      entityKey = entity[this.entityKeyProperty];
+      if (this.exists(entityKey)) {
+        throw new Error("An Entity with key: " + entityKey + " already exists in this EntitySet.");
+      }
+      this.entitiesByKey[entityKey] = entity;
+      return entity;
+    };
+
+    EntitySet.prototype.remove = function(entity) {
+      if (this.contains(entity)) {
+        delete this.entitiesByKey[entity[this.entityKeyProperty]];
+        return entity;
+      }
+      return null;
+    };
+
+    EntitySet.prototype.removeAll = function() {
+      this.entitiesByKey = {};
+    };
+
+    EntitySet.prototype.get = function(key) {
+      return this.entitiesByKey[key];
+    };
+
+    EntitySet.prototype.find = function(attributes) {
+      var matches;
+      matches = function(entity) {
+        var attribute, attributeValue;
+        for (attribute in attributes) {
+          attributeValue = attributes[attribute];
+          if (entity[attribute] !== attributeValue) {
+            return false;
+          }
+        }
+        return true;
+      };
+      return this.match(matches);
+    };
+
+    EntitySet.prototype.match = function(matcherFunction) {
+      var entity, entityId, matchingEntities, _ref;
+      matchingEntities = [];
+      _ref = this.entitiesByKey;
+      for (entityId in _ref) {
+        entity = _ref[entityId];
+        if (matcherFunction(entity)) {
+          matchingEntities.push(entity);
+        }
+      }
+      return matchingEntities;
+    };
+
+    EntitySet.prototype.contains = function(entity) {
+      var entityKey;
+      entityKey = entity[this.entityKeyProperty];
+      return this.exists(entityKey) && entity === this.get(entityKey);
+    };
+
+    EntitySet.prototype.exists = function(key) {
+      return this.entitiesByKey[key] != null;
+    };
+
+    EntitySet.prototype.toArray = function() {
+      var entities, entity, entityId, _ref;
+      entities = [];
+      _ref = this.entitiesByKey;
+      for (entityId in _ref) {
+        entity = _ref[entityId];
+        entities.push(entity);
+      }
+      return entities;
+    };
+
+    return EntitySet;
+
+  })();
+
+  DeferredEntityRegistry = (function() {
+
+    function DeferredEntityRegistry(entityClass, entityKeyProperty) {
+      this.entityClass = entityClass;
+      this.entityKeyProperty = entityKeyProperty != null ? entityKeyProperty : 'id';
+      this.entities = new EntitySet(this.entityClass);
+      this.pendingEntityRequestsByEntityId = {};
+    }
+
+    DeferredEntityRegistry.prototype.get = function(entityId, timeout) {
+      var deferred, entity, _base, _ref,
+        _this = this;
+      entity = this.entities.get(entityId);
+      if (entity != null) {
+        deferred = new Deferred();
+        deferred.resolve(entity);
+        return deferred.promise;
+      } else {
+        deferred = new Deferred();
+        if (timeout != null) {
+          setTimeout(function() {
+            deferred.reject(new Error("Request for " + _this.entityClass.name + " with " + _this.entityKeyProperty + ": \"" + entityId + "\" timed out."));
+          }, timeout);
+        }
+        if ((_ref = (_base = this.pendingEntityRequestsByEntityId)[entityId]) == null) {
+          _base[entityId] = [];
+        }
+        this.pendingEntityRequestsByEntityId[entityId].push(deferred);
+        return deferred.promise;
+      }
+    };
+
+    DeferredEntityRegistry.prototype.register = function(entity) {
+      var entityId, pendingEntityRequest, pendingEntityRequests, _i, _len;
+      this.entities.add(entity);
+      entityId = entity[this.entityKeyProperty];
+      pendingEntityRequests = this.pendingEntityRequestsByEntityId[entityId];
+      for (_i = 0, _len = pendingEntityRequests.length; _i < _len; _i++) {
+        pendingEntityRequest = pendingEntityRequests[_i];
+        pendingEntityRequest.resolve(entity);
+      }
+      delete this.pendingEntityRequestsByEntityId[entityId];
+      return entity;
+    };
+
+    DeferredEntityRegistry.prototype.unregister = function(entity) {
+      this.entities.remove(entity);
+      return entity;
+    };
+
+    return DeferredEntityRegistry;
+
+  })();
+
+  SWFServiceProxy = (function() {
+
+    function SWFServiceProxy(serviceContext, id, descriptor) {
+      var accessor, createGetter, createMethod, createSetter, method, variable, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+      this.id = id;
+      createGetter = function(propertyName) {
+        return function() {
+          return serviceContext.getServiceProperty(id, propertyName);
+        };
+      };
+      createSetter = function(propertyName) {
+        return function(value) {
+          serviceContext.setServiceProperty(id, propertyName, value);
+        };
+      };
+      createMethod = function(methodName) {
+        return function() {
+          var args;
+          args = Array.prototype.slice.call(arguments);
+          return serviceContext.executeServiceMethod(id, methodName, args);
+        };
+      };
+      _ref = descriptor.accessors;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        accessor = _ref[_i];
+        Object.defineProperty(this, accessor.name, {
+          writeable: accessor.access !== 'readonly',
+          get: createGetter(accessor.name),
+          set: createSetter(accessor.name)
+        });
+      }
+      _ref1 = descriptor.variables;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        variable = _ref1[_j];
+        Object.defineProperty(this, variable.name, {
+          get: createGetter(variable.name),
+          set: createSetter(variable.name)
+        });
+      }
+      _ref2 = descriptor.methods;
+      for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+        method = _ref2[_k];
+        this[method.name] = createMethod(method.name);
+      }
+      if (descriptor.isEventDispatcher) {
+        this.addEventListener = function(eventType, listenerFunction, useCapture, priority, weakReference) {
+          if (useCapture == null) {
+            useCapture = false;
+          }
+          if (priority == null) {
+            priority = 0;
+          }
+          if (weakReference == null) {
+            weakReference = false;
+          }
+          serviceContext.addServiceEventListener(id, eventType, listenerFunction, useCapture, priority, weakReference);
+        };
+        this.removeEventListener = function(eventType, listenerFunction, useCapture) {
+          if (useCapture == null) {
+            useCapture = false;
+          }
+          serviceContext.removeServiceEventListener(id, eventType, listenerFunction, useCapture);
+        };
+      }
+    }
+
+    return SWFServiceProxy;
+
+  })();
+
+  SWFServiceOperationProxy = (function() {
+
+    function SWFServiceOperationProxy(id, serviceId, methodName, args) {
+      var deferred;
+      this.id = id;
+      this.serviceId = serviceId;
+      this.methodName = methodName;
+      this.args = args;
+      deferred = new Deferred();
+      this.promise = deferred.promise, this.resolve = deferred.resolve, this.reject = deferred.reject;
+    }
+
+    return SWFServiceOperationProxy;
+
+  })();
+
+  SWFServiceEventListenerProxy = (function() {
+
+    function SWFServiceEventListenerProxy(id, serviceId, eventType, listenerFunction, useCapture, priority, useWeakReference) {
+      this.id = id;
+      this.serviceId = serviceId;
+      this.eventType = eventType;
+      this.listenerFunction = listenerFunction;
+      this.useCapture = useCapture != null ? useCapture : false;
+      this.priority = priority != null ? priority : 0;
+      this.useWeakReference = useWeakReference != null ? useWeakReference : false;
+    }
+
+    SWFServiceEventListenerProxy.prototype.redispatch = function(event) {
+      return this.listenerFunction(event);
+    };
+
+    return SWFServiceEventListenerProxy;
+
+  })();
+
+  SWFServiceContext = (function() {
+
+    function SWFServiceContext(id) {
+      this.id = id;
+      this.serviceProxyRegistry = new DeferredEntityRegistry(SWFServiceProxy);
+      this.serviceOperationProxies = new EntitySet(SWFServiceOperationProxy);
+      this.serviceEventListenerProxies = new EntitySet(SWFServiceEventListenerProxy);
+      return;
+    }
+
+    SWFServiceContext.prototype.get = function(serviceId, timeout) {
+      return this.serviceProxyRegistry.get(serviceId, timeout);
+    };
+
+    SWFServiceContext.prototype.getServiceDescriptor = function(serviceId) {
+      return this.swf.SWFServiceContext_getServiceDescriptor(serviceId);
+    };
+
+    SWFServiceContext.prototype.getServiceProperty = function(serviceId, propertyName) {
+      return this.swf.SWFServiceContext_getServiceProperty(serviceId, propertyName);
+    };
+
+    SWFServiceContext.prototype.setServiceProperty = function(serviceId, propertyName, value) {
+      this.swf.SWFServiceContext_setServiceProperty(serviceId, propertyName, value);
+    };
+
+    SWFServiceContext.prototype.executeServiceMethod = function(serviceId, methodName, args) {
+      var cleanUp, returnValue, serviceOperationProxy,
+        _this = this;
+      returnValue = this.swf.SWFServiceContext_executeServiceMethod(serviceId, methodName, args);
+      if (returnValue.pending) {
+        serviceOperationProxy = new SWFServiceOperationProxy(returnValue.operationId, serviceId, methodName, args);
+        this.serviceOperationProxies.add(serviceOperationProxy);
+        cleanUp = function() {
+          return _this.serviceOperationProxies.remove(serviceOperationProxy);
+        };
+        serviceOperationProxy.promise.then(cleanUp, cleanUp);
+        return serviceOperationProxy.promise;
+      }
+      return returnValue.value;
+    };
+
+    SWFServiceContext.prototype.addServiceEventListener = function(serviceId, eventType, listenerFunction, useCapture, priority, weakReference) {
+      var serviceEventListenerProxyId;
+      serviceEventListenerProxyId = this.swf.SWFServiceContext_addServiceEventListener(serviceId, eventType, useCapture, priority, weakReference);
+      this.serviceEventListenerProxies.add(new SWFServiceEventListenerProxy(serviceEventListenerProxyId, serviceId, eventType, listenerFunction, useCapture, priority, weakReference));
+    };
+
+    SWFServiceContext.prototype.removeServiceEventListener = function(serviceId, eventType, listenerFunction, useCapture) {
+      var serviceEventListenerProxy;
+      serviceEventListenerProxy = this.serviceEventListenerProxies.find({
+        serviceId: serviceId,
+        eventType: eventType,
+        listenerFunction: listenerFunction,
+        useCapture: useCapture
+      })[0];
+      if (serviceEventListenerProxy != null) {
+        this.swf.SWFServiceContext_removeServiceEventListener(serviceId, serviceEventListenerProxy.id);
+        this.serviceEventListenerProxies.remove(serviceEventListenerProxy);
+      }
+    };
+
+    SWFServiceContext.prototype.onServiceRegister = function(serviceId, serviceDescriptor) {
+      this.serviceProxyRegistry.register(new SWFServiceProxy(this, serviceId, serviceDescriptor));
+    };
+
+    SWFServiceContext.prototype.onServiceExecuteComplete = function(serviceId, serviceOperationProxyId, action, value) {
+      var serviceOperationProxy;
+      serviceOperationProxy = this.serviceOperationProxies.get(serviceOperationProxyId);
+      if (serviceOperationProxy != null) {
+        serviceOperationProxy[action](value);
+      }
+    };
+
+    SWFServiceContext.prototype.onServiceEvent = function(serviceId, serviceEventListenerProxyId, event) {
+      return this.serviceEventListenerProxies.get(serviceEventListenerProxyId).redispatch(event);
+    };
+
+    return SWFServiceContext;
+
+  })();
+
+  SWFServiceContextManager = (function() {
+
+    function SWFServiceContextManager() {
+      this.serviceContexts = new EntitySet(SWFServiceContext);
+    }
+
+    SWFServiceContextManager.prototype.add = function(serviceContext) {
+      return this.serviceContexts.add(serviceContext);
+    };
+
+    SWFServiceContextManager.prototype.getById = function(serviceContextId) {
+      return this.serviceContexts.get(serviceContextId);
+    };
+
+    SWFServiceContextManager.prototype.getBySWF = function(swf, timeout) {
+      var deferred, intervalId, timer,
+        _this = this;
+      deferred = new Deferred();
+      timer = new Timer(timeout);
+      intervalId = setInterval(function() {
+        var serviceContext, serviceContextId, _ref;
+        try {
+          serviceContextId = swf.SWFServiceContext_getId();
+        } catch (error) {
+
+        }
+        if (serviceContextId != null) {
+          clearInterval(intervalId);
+          serviceContext = _this.serviceContexts.get(serviceContextId);
+          if ((_ref = serviceContext.swf) == null) {
+            serviceContext.swf = swf;
+          }
+          deferred.resolve(serviceContext);
+        } else {
+          if (timer.expired()) {
+            clearInterval(intervalId);
+            deferred.reject(new Error('SWFService timed out attempting to access the requested SWF.'));
+          }
+        }
+      }, 100);
+      return deferred.promise;
+    };
+
+    return SWFServiceContextManager;
+
+  })();
+
+  SWFService = (function() {
+
+    function SWFService() {
+      this.serviceContextManager = new SWFServiceContextManager();
+    }
+
+    SWFService.prototype.get = function(swf, serviceId, timeout) {
+      var timer;
+      if (timeout == null) {
+        timeout = 30000;
+      }
+      timer = new Timer(timeout);
+      return this.serviceContextManager.getBySWF(swf, timer.remaining()).then(function(serviceContext) {
+        return serviceContext.get(serviceId, timer.remaining());
+      });
+    };
+
+    SWFService.prototype.onInit = function(serviceContextId) {
+      this.serviceContextManager.add(new SWFServiceContext(serviceContextId));
+    };
+
+    SWFService.prototype.onServiceRegister = function(serviceContextId, serviceId, serviceDescriptor) {
+      this.serviceContextManager.getById(serviceContextId).onServiceRegister(serviceId, serviceDescriptor);
+    };
+
+    SWFService.prototype.onServiceExecuteComplete = function(serviceContextId, serviceId, operationId, action, value) {
+      this.serviceContextManager.getById(serviceContextId).onServiceExecuteComplete(serviceId, operationId, action, value);
+    };
+
+    SWFService.prototype.onServiceEvent = function(serviceContextId, serviceId, listenerId, event) {
+      return this.serviceContextManager.getById(serviceContextId).onServiceEvent(serviceId, listenerId, event);
+    };
+
+    return SWFService;
+
+  })();
+
+  target = typeof exports !== "undefined" && exports !== null ? exports : window;
+
+  target.SWFService = new SWFService();
+
+}).call(this);
