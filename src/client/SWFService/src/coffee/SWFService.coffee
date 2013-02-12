@@ -2,6 +2,20 @@
 # Copyright (c) 2008-2013 [CodeCatalyst, LLC](http://www.codecatalyst.com/).
 # Open source under the [MIT License](http://en.wikipedia.org/wiki/MIT_License).
 
+class Timer
+	constructor: ( duration ) ->
+		now = -> new Date().getTime()
+		start = now()
+		
+		@elapsed = -> 
+			return now() - start
+		
+		@remaining = -> 
+			return Math.max( duration - @elapsed(), 0 )
+		
+		@expired = -> 
+			return @elapsed() > duration
+
 class EntitySet
 	constructor: ( @entityClass, @entityKeyProperty = 'id' ) ->
 		@entitiesByKey = {}
@@ -58,11 +72,11 @@ class EntitySet
 		return entities
 
 class DeferredEntityRegistry
-	constructor: ( @entityClass, @entityKeyProperty = 'id', @options = {} ) ->
+	constructor: ( @entityClass, @entityKeyProperty = 'id' ) ->
 		@entities = new EntitySet( @entityClass )
 		@pendingEntityRequestsByEntityId = {}
 	
-	get: ( entityId ) ->
+	get: ( entityId, timeout ) ->
 		entity = @entities.get( entityId )
 		if entity?
 			deferred = new Deferred()
@@ -70,10 +84,10 @@ class DeferredEntityRegistry
 			return deferred.promise
 		else
 			deferred = new Deferred()
-			if @options.timeout?
+			if timeout?
 				setTimeout( 
 					=>
-						deferred.reject( new Error( "Request for #{ @entityClass.name } with #{ @entityKeyProperty }: #{ entityId } timed out." ) )
+						deferred.reject( new Error( "Request for #{ @entityClass.name } with #{ @entityKeyProperty }: \"#{ entityId }\" timed out." ) )
 						return
 					timeout
 				)
@@ -148,8 +162,8 @@ class SWFServiceContext
 		@serviceEventListenerProxies = new EntitySet( SWFServiceEventListenerProxy )
 		return
 	
-	get: ( serviceId ) ->
-		return @serviceProxyRegistry.get( serviceId )
+	get: ( serviceId, timeout ) ->
+		return @serviceProxyRegistry.get( serviceId, timeout )
 	
 	getServiceDescriptor: ( serviceId ) ->
 		return @swf.SWFServiceContext_getServiceDescriptor( serviceId )
@@ -206,20 +220,24 @@ class SWFServiceContextManager
 	getById: ( serviceContextId ) ->
 		return @serviceContexts.get( serviceContextId )
 	
-	getBySWF: ( swf ) ->
+	getBySWF: ( swf, timeout ) ->
 		deferred = new Deferred()
+		timer = new Timer( timeout )
 		intervalId = setInterval( 
 			=>
 				try
 					serviceContextId = swf.SWFServiceContext_getId()
 				catch error
-					# Ignore
+					# Intentionally ignored.
 				if serviceContextId?
+					clearInterval( intervalId )
 					serviceContext = @serviceContexts.get( serviceContextId )
 					serviceContext.swf ?= swf
 					deferred.resolve( serviceContext )
-					
-					clearInterval( intervalId )
+				else
+					if timer.expired()
+						clearInterval( intervalId )
+						deferred.reject( new Error(  'SWFService timed out attempting to access the requested SWF.' ) )
 				return
 			100
 		)
@@ -229,23 +247,34 @@ class SWFService
 	constructor: ->
 		@serviceContextManager = new SWFServiceContextManager()
 	
-	get: ( swf, serviceId ) ->
-		return @serviceContextManager.getBySWF( swf ).then( ( serviceContext ) -> serviceContext.get( serviceId ) )
+	get: ( swf, serviceId, timeout = 30000 ) ->
+		timer = new Timer( timeout )
+		return @serviceContextManager
+			.getBySWF( swf, timer.remaining() )
+			.then( ( serviceContext ) -> 
+				return serviceContext.get( serviceId, timer.remaining() )
+			)
 	
 	onInit: ( serviceContextId ) ->
 		@serviceContextManager.add( new SWFServiceContext( serviceContextId ) )
 		return
 	
 	onServiceRegister: ( serviceContextId, serviceId, serviceDescriptor ) ->
-		@serviceContextManager.getById( serviceContextId ).onServiceRegister( serviceId, serviceDescriptor )
+		@serviceContextManager
+			.getById( serviceContextId )
+			.onServiceRegister( serviceId, serviceDescriptor )
 		return
 	
 	onServiceExecuteComplete: ( serviceContextId, serviceId, operationId, action, value ) ->
-		@serviceContextManager.getById( serviceContextId ).onServiceExecuteComplete( serviceId, operationId, action, value )
+		@serviceContextManager
+			.getById( serviceContextId )
+			.onServiceExecuteComplete( serviceId, operationId, action, value )
 		return
 	
 	onServiceEvent: ( serviceContextId, serviceId, listenerId, event ) ->
-		return @serviceContextManager.getById( serviceContextId ).onServiceEvent( serviceId, listenerId, event )
+		return @serviceContextManager
+			.getById( serviceContextId )
+			.onServiceEvent( serviceId, listenerId, event )
 
 target = exports ? window
 target.SWFService = new SWFService()
