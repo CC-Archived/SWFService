@@ -76,12 +76,13 @@ package com.codecatalyst.swfservice.context
 			
 			ExternalInterface.addCallback( "SWFServiceContext_getId", getId );
 			
-			ExternalInterface.addCallback( "SWFServiceContext_getServiceDescriptor", getServiceDescriptor );
 			ExternalInterface.addCallback( "SWFServiceContext_getServiceProperty", getServiceProperty );
 			ExternalInterface.addCallback( "SWFServiceContext_setServiceProperty", setServiceProperty );
 			ExternalInterface.addCallback( "SWFServiceContext_executeServiceMethod", executeServiceMethod );
 			ExternalInterface.addCallback( "SWFServiceContext_addServiceEventListener", addServiceEventListener );
 			ExternalInterface.addCallback( "SWFServiceContext_removeServiceEventListener", removeServiceEventListener );
+			
+			ExternalInterface.call( "SWFService.onInit", id );
 		}
 		
 		// ========================================
@@ -95,6 +96,8 @@ package com.codecatalyst.swfservice.context
 		{
 			var serviceProxy:SWFServiceProxy = new SWFServiceProxy( this, serviceId, serviceInstance );
 			serviceProxies.add( serviceProxy );
+			
+			ExternalInterface.call( "SWFService.onServiceRegister", id, serviceProxy.id, serviceProxy.descriptor );
 			
 			return serviceProxy;
 		}
@@ -125,16 +128,6 @@ package com.codecatalyst.swfservice.context
 		protected function getId():String
 		{
 			return id;
-		}
-		
-		/**
-		 * Handle a JavaScript request to get a service descriptor.
-		 */
-		protected function getServiceDescriptor( serviceId:String ):Descriptor
-		{
-			// TODO: Refactor to transparently support asynchronous availability via Promise.
-			
-			return getServiceProxy( serviceId ).getDescriptor();
 		}
 		
 		/**

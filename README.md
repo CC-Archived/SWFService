@@ -108,15 +108,24 @@ or, for the minified version of the script:
 
 ### Obtaining a JavaScript reference to a SWF Service
 
-From JavaScript, you can request an AS3 class instance from SWFService, by calling `SWFService.get()` and specifying the SWF instance and the identifier that was used to register that AS3 class instance as a service.
+From JavaScript, you can request an AS3 class instance from SWFService, by calling `SWFService.get()` and specifying the SWF instance and the identifier that was used to register that AS3 class instance as a service.  `SWFService.get()` returns a [JavaScript Promise](http://github.com/CodeCatalyst/promise-coffee) that will resolve with a JavaScript proxy object when the requested service becomes available (i.e. when the SWF is loaded and that service has been registered).  This proxy object is automatically populated with all of the public properties, accessors and methods your AS3 class instance exposed.
 
 For example:
 
-	var videoPlayerService = SWFService.get( swf, 'VideoPlayerService' );
+```javascript
+SWFService
+	.get( swf, 'VideoPlayerService' )
+	.then( 
+		function ( videoPlayerService )
+			console.log( "Success:", videoPlayerService );
+		),
+		function ( error ) {
+			console.log( "Failure:", error );
+		}
+	);
+```
 
 (where `swf` is a reference to the SWF instance in your HTML page).  
-
-This will return a proxy object that is automatically populated with all of the properties, accessors and methods your AS3 class instance exposed.
 
 ### Methods
 

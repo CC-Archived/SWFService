@@ -53,6 +53,11 @@ package com.codecatalyst.swfservice.context.proxy
 		protected var _serviceInstance:Object = null;
 		
 		/**
+		 * Backing variable for <code>descriptor</code>.
+		 */
+		protected var _descriptor:Descriptor = null;
+		
+		/**
 		 * Pending service operations proxies.
 		 */
 		protected var serviceOperationProxies:EntitySet = null;
@@ -90,6 +95,14 @@ package com.codecatalyst.swfservice.context.proxy
 			return _serviceInstance;
 		}
 		
+		/**
+		 * Service proxy descriptor.
+		 */
+		public function get descriptor():Descriptor
+		{
+			return _descriptor;
+		}
+		
 		// ========================================
 		// Constructor
 		// ========================================
@@ -101,6 +114,7 @@ package com.codecatalyst.swfservice.context.proxy
 			this._serviceContext = serviceContext;
 			this._id = id;
 			this._serviceInstance = serviceInstance;
+			this._descriptor = new Descriptor( this );
 			
 			this.serviceOperationProxies = new EntitySet( SWFServiceOperationProxy );
 			this.serviceEventListenerProxies = new EntitySet( SWFServiceListenerProxy );
@@ -109,14 +123,6 @@ package com.codecatalyst.swfservice.context.proxy
 		// ========================================
 		// Public methods
 		// ========================================
-		
-		/**
-		 * Get a description of the Service's public properties and methods.
-		 */
-		public function getDescriptor():Descriptor
-		{
-			return new Descriptor( this );
-		}
 		
 		/**
 		 * Get a Service property value by name.

@@ -57,8 +57,45 @@ class EntitySet
 			entities.push( entity )
 		return entities
 
+class DeferredEntityRegistry
+	constructor: ( @entityClass, @entityKeyProperty = 'id', @options = {} ) ->
+		@entities = new EntitySet( @entityClass )
+		@pendingEntityRequestsByEntityId = {}
+	
+	get: ( entityId ) ->
+		entity = @entities.get( entityId )
+		if entity?
+			deferred = new Deferred()
+			deferred.resolve( entity )
+			return deferred.promise
+		else
+			deferred = new Deferred()
+			if @options.timeout?
+				setTimeout( 
+					=>
+						deferred.reject( new Error( "Request for #{ @entityClass.name } with #{ @entityKeyProperty }: #{ entityId } timed out." ) )
+						return
+					timeout
+				)
+			@pendingEntityRequestsByEntityId[ entityId ] ?= []
+			@pendingEntityRequestsByEntityId[ entityId ].push( deferred )
+			return deferred.promise
+	
+	register: ( entity ) ->
+		@entities.add( entity )
+		entityId = entity[ @entityKeyProperty ]
+		pendingEntityRequests = @pendingEntityRequestsByEntityId[ entityId ]
+		for pendingEntityRequest in pendingEntityRequests
+			pendingEntityRequest.resolve( entity )
+		delete @pendingEntityRequestsByEntityId[ entityId ]
+		return entity
+	
+	unregister: ( entity ) ->
+		@entities.remove( entity )
+		return entity
+
 class SWFServiceProxy
-	constructor: ( serviceContext, @id ) ->
+	constructor: ( serviceContext, @id, descriptor ) ->
 		createGetter = ( propertyName ) ->
 			return -> 
 				return serviceContext.getServiceProperty( id, propertyName )
@@ -71,22 +108,21 @@ class SWFServiceProxy
 				args = Array.prototype.slice.call( arguments )
 				return serviceContext.executeServiceMethod( id, methodName, args )
 		
-		serviceDescriptor = serviceContext.getServiceDescriptor( id )
-		for accessor in serviceDescriptor.accessors
+		for accessor in descriptor.accessors
 			Object.defineProperty( @, accessor.name, 
 				writeable: accessor.access isnt 'readonly'
 				get: createGetter( accessor.name )
 				set: createSetter( accessor.name )
 			)
-		for variable in serviceDescriptor.variables
+		for variable in descriptor.variables
 			Object.defineProperty( @, variable.name, 
 				get: createGetter( variable.name )
 				set: createSetter( variable.name )
 			)
-		for method in serviceDescriptor.methods
+		for method in descriptor.methods
 			@[ method.name ] = createMethod( method.name )
 		
-		if serviceDescriptor.isEventDispatcher
+		if descriptor.isEventDispatcher
 			@addEventListener = ( eventType, listenerFunction, useCapture = false, priority = 0, weakReference = false ) ->
 				serviceContext.addServiceEventListener( id, eventType, listenerFunction, useCapture, priority, weakReference )
 				return
@@ -102,22 +138,18 @@ class SWFServiceOperationProxy
 class SWFServiceEventListenerProxy
 	constructor: ( @id, @serviceId, @eventType, @listenerFunction, @useCapture = false, @priority = 0, @useWeakReference = false ) ->
 	
-	matches: ( serviceId, eventType, listenerFunction, useCapture ) ->
-		return @serviceId is serviceId and @eventType is eventType and @listenerFunction is listenerFunction and @useCapture is useCapture
-	
 	redispatch: ( event ) ->
 		return @listenerFunction( event )
 
 class SWFServiceContext
-	constructor: ( @swf ) ->
-		@id = @swf.SWFServiceContext_getId()
-		@serviceProxies = new EntitySet( SWFServiceProxy )
+	constructor: ( @id ) ->
+		@serviceProxyRegistry = new DeferredEntityRegistry( SWFServiceProxy )
 		@serviceOperationProxies = new EntitySet( SWFServiceOperationProxy )
 		@serviceEventListenerProxies = new EntitySet( SWFServiceEventListenerProxy )
 		return
 	
 	get: ( serviceId ) ->
-		return @serviceProxies.get( serviceId ) or @serviceProxies.add( new SWFServiceProxy( @, serviceId ) )
+		return @serviceProxyRegistry.get( serviceId )
 	
 	getServiceDescriptor: ( serviceId ) ->
 		return @swf.SWFServiceContext_getServiceDescriptor( serviceId )
@@ -134,6 +166,8 @@ class SWFServiceContext
 		if returnValue.pending
 			serviceOperationProxy = new SWFServiceOperationProxy( returnValue.operationId, serviceId, methodName, args )
 			@serviceOperationProxies.add( serviceOperationProxy )
+			cleanUp = => @serviceOperationProxies.remove( serviceOperationProxy )
+			serviceOperationProxy.promise.then( cleanUp, cleanUp )
 			return serviceOperationProxy.promise
 		return returnValue.value
 	
@@ -149,29 +183,69 @@ class SWFServiceContext
 			@serviceEventListenerProxies.remove( serviceEventListenerProxy )
 		return
 	
+	onServiceRegister: ( serviceId, serviceDescriptor ) ->
+		@serviceProxyRegistry.register( new SWFServiceProxy( @, serviceId, serviceDescriptor ) )
+		return
+	
 	onServiceExecuteComplete: ( serviceId, serviceOperationProxyId, action, value ) ->
 		serviceOperationProxy = @serviceOperationProxies.get( serviceOperationProxyId )
 		if serviceOperationProxy?
 			serviceOperationProxy[ action ]( value )
-			@serviceOperationProxies.remove( serviceOperationProxy )
 		return
 	
 	onServiceEvent: ( serviceId, serviceEventListenerProxyId, event ) ->
 		return @serviceEventListenerProxies.get( serviceEventListenerProxyId ).redispatch( event )
 
-class SWFService
+class SWFServiceContextManager
 	constructor: ->
 		@serviceContexts = new EntitySet( SWFServiceContext )
 	
+	add: ( serviceContext ) ->
+		return @serviceContexts.add( serviceContext )
+	
+	getById: ( serviceContextId ) ->
+		return @serviceContexts.get( serviceContextId )
+	
+	getBySWF: ( swf ) ->
+		deferred = new Deferred()
+		intervalId = setInterval( 
+			=>
+				try
+					serviceContextId = swf.SWFServiceContext_getId()
+				catch error
+					# Ignore
+				if serviceContextId?
+					serviceContext = @serviceContexts.get( serviceContextId )
+					serviceContext.swf ?= swf
+					deferred.resolve( serviceContext )
+					
+					clearInterval( intervalId )
+				return
+			100
+		)
+		return deferred.promise
+
+class SWFService
+	constructor: ->
+		@serviceContextManager = new SWFServiceContextManager()
+	
 	get: ( swf, serviceId ) ->
-		serviceContext = @serviceContexts.find( { swf: swf } )[ 0 ] or @serviceContexts.add( new SWFServiceContext( swf ) )
-		return serviceContext.get( serviceId )
+		return @serviceContextManager.getBySWF( swf ).then( ( serviceContext ) -> serviceContext.get( serviceId ) )
+	
+	onInit: ( serviceContextId ) ->
+		@serviceContextManager.add( new SWFServiceContext( serviceContextId ) )
+		return
+	
+	onServiceRegister: ( serviceContextId, serviceId, serviceDescriptor ) ->
+		@serviceContextManager.getById( serviceContextId ).onServiceRegister( serviceId, serviceDescriptor )
+		return
 	
 	onServiceExecuteComplete: ( serviceContextId, serviceId, operationId, action, value ) ->
-		return @serviceContexts.get( serviceContextId ).onServiceExecuteComplete( serviceId, operationId, action, value )
+		@serviceContextManager.getById( serviceContextId ).onServiceExecuteComplete( serviceId, operationId, action, value )
+		return
 	
 	onServiceEvent: ( serviceContextId, serviceId, listenerId, event ) ->
-		return @serviceContexts.get( serviceContextId ).onServiceEvent( serviceId, listenerId, event )
+		return @serviceContextManager.getById( serviceContextId ).onServiceEvent( serviceId, listenerId, event )
 
 target = exports ? window
 target.SWFService = new SWFService()
