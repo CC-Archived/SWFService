@@ -518,14 +518,15 @@
       return this.serviceContexts.get(serviceContextId);
     };
 
-    SWFServiceContextManager.prototype.getBySWF = function(swf, timeout) {
+    SWFServiceContextManager.prototype.getBySWFId = function(swfId, timeout) {
       var deferred, intervalId, timer,
         _this = this;
       deferred = new Deferred();
       timer = new Timer(timeout);
       intervalId = setInterval(function() {
-        var serviceContext, serviceContextId, _ref;
+        var serviceContext, serviceContextId, swf, _ref;
         try {
+          swf = document.getElementById(swfId);
           serviceContextId = swf.SWFServiceContext_getId();
         } catch (error) {
 
@@ -557,13 +558,13 @@
       this.serviceContextManager = new SWFServiceContextManager();
     }
 
-    SWFService.prototype.get = function(swf, serviceId, timeout) {
+    SWFService.prototype.get = function(swfId, serviceId, timeout) {
       var timer;
       if (timeout == null) {
         timeout = 30000;
       }
       timer = new Timer(timeout);
-      return this.serviceContextManager.getBySWF(swf, timer.remaining()).then(function(serviceContext) {
+      return this.serviceContextManager.getBySWFId(swfId, timer.remaining()).then(function(serviceContext) {
         return serviceContext.get(serviceId, timer.remaining());
       });
     };

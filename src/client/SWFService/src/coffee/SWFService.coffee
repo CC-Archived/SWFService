@@ -220,12 +220,13 @@ class SWFServiceContextManager
 	getById: ( serviceContextId ) ->
 		return @serviceContexts.get( serviceContextId )
 	
-	getBySWF: ( swf, timeout ) ->
+	getBySWFId: ( swfId, timeout ) ->
 		deferred = new Deferred()
 		timer = new Timer( timeout )
 		intervalId = setInterval( 
 			=>
 				try
+					swf = document.getElementById( swfId )
 					serviceContextId = swf.SWFServiceContext_getId()
 				catch error
 					# Intentionally ignored.
@@ -247,10 +248,10 @@ class SWFService
 	constructor: ->
 		@serviceContextManager = new SWFServiceContextManager()
 	
-	get: ( swf, serviceId, timeout = 30000 ) ->
+	get: ( swfId, serviceId, timeout = 30000 ) ->
 		timer = new Timer( timeout )
 		return @serviceContextManager
-			.getBySWF( swf, timer.remaining() )
+			.getBySWFId( swfId, timer.remaining() )
 			.then( ( serviceContext ) -> 
 				return serviceContext.get( serviceId, timer.remaining() )
 			)

@@ -108,13 +108,13 @@ or, for the minified version of the script:
 
 ### Obtaining a JavaScript reference to a SWF Service
 
-From JavaScript, you can request an AS3 class instance from SWFService, by calling `SWFService.get()` and specifying the SWF instance and the identifier that was used to register that AS3 class instance as a service.  `SWFService.get()` returns a [JavaScript Promise](http://github.com/CodeCatalyst/promise-coffee) that will resolve with a JavaScript proxy object when the requested service becomes available (i.e. when the SWF is loaded and that service has been registered).  This proxy object is automatically populated with all of the public properties, accessors and methods your AS3 class instance exposed.
+From JavaScript, you can request an AS3 class instance from SWFService, by calling `SWFService.get()` and specifying the SWF tag id and the identifier that was used to register that AS3 class instance as a service.  `SWFService.get()` returns a [JavaScript Promise](http://github.com/CodeCatalyst/promise-coffee) that will resolve with a JavaScript proxy object when the requested service becomes available (i.e. when the SWF is loaded and that service has been registered).  This proxy object is automatically populated with all of the public properties, accessors and methods your AS3 class instance exposed.
 
 For example:
 
 ```javascript
 SWFService
-	.get( swf, 'VideoPlayerService' )
+	.get( 'MySWF', 'VideoPlayerService' )
 	.then( 
 		function ( videoPlayerService )
 			console.log( videoPlayerService );
@@ -125,7 +125,7 @@ SWFService
 	);
 ```
 
-where `swf` is a reference to the SWF instance in your HTML page, `VideoPlayerService` is the identifier used to register the service in the SWF.  You can optionally specify a timeout in milliseconds for acquiring the service as the third parameter.
+where `MySWF` is the id for the SWF &lt;object&gt; tag in your HTML page, `VideoPlayerService` is the identifier used to register the service in the SWF.  You can optionally specify a timeout in milliseconds for acquiring the service as the third parameter.
 
 ### Methods
 
