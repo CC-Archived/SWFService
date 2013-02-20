@@ -528,12 +528,12 @@
         try {
           swf = document.getElementById(swfId);
           serviceContextId = swf.SWFServiceContext_getId();
+          serviceContext = _this.serviceContexts.get(serviceContextId);
         } catch (error) {
 
         }
-        if (serviceContextId != null) {
+        if ((serviceContextId != null) && (serviceContext != null)) {
           clearInterval(intervalId);
-          serviceContext = _this.serviceContexts.get(serviceContextId);
           if ((_ref = serviceContext.swf) == null) {
             serviceContext.swf = swf;
           }

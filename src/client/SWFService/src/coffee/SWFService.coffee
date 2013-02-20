@@ -228,11 +228,11 @@ class SWFServiceContextManager
 				try
 					swf = document.getElementById( swfId )
 					serviceContextId = swf.SWFServiceContext_getId()
+					serviceContext = @serviceContexts.get( serviceContextId )
 				catch error
 					# Intentionally ignored.
-				if serviceContextId?
+				if serviceContextId? and serviceContext?
 					clearInterval( intervalId )
-					serviceContext = @serviceContexts.get( serviceContextId )
 					serviceContext.swf ?= swf
 					deferred.resolve( serviceContext )
 				else
