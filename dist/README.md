@@ -1,12 +1,28 @@
-# SWFService
+<img src="SWFService-mascot.png" width="348" height="512" align="left">
+<div>
+    <br><br>
+    <!-- Embedded in a table as a workaround for the bullets losing their left padding. -->
+	<table border="0">
+		<tr style="border: none;">
+			<td style="border: none;">
+				<br>
+				<img src="SWFService-logo.png" width="390" height="83"><br><br>
+				<p>With SWFService and just a couple lines of code you can:</p>
+				<ul>
+					<li>call synchronous and asynchronous methods;</li>
+					<li>get and set properties and accessors, and</li>
+					<li>add and remove event listeners</li>
+				</ul>
+				<p>on an ActionScript class instance from JavaScript as if it were a native JavaScript object.</p>
+			</td>
+		</tr>
+	</table>
+	<br><br><br><br>
+</div>
 
 ## About
 
-SWFService allows ActionScript developers to transparently expose an AS3 class instance to JavaScript.
-
-## Why?
-
-The Flash Platform's standard [ExternalInterface](http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/external/ExternalInterface.html) only provides a low level API for communicating across the boundary between ActionScript and JavaScript.  Exposing a typical API using ExternalInterface requires a significant amount of boilerplate code.  Further, ExternalInterface does not provide primitives for supporting more advanced features, such as event dispatching or asynchronous methods calls.
+The Adobe Flash Platform's standard [ExternalInterface](http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/external/ExternalInterface.html) only provides a low level API for communicating across the boundary between ActionScript and JavaScript.  Exposing a typical API using ExternalInterface requires a significant amount of boilerplate code.  Further, ExternalInterface does not provide primitives for supporting more advanced features, such as event dispatching or asynchronous methods calls.
 
 SWFService builds on ExternalInterface to provide a generalized solution for automatically exposing AS3 class instances as named "services" which provide an RPC-style API to JavaScript.  An AS3 class instance can be registered with SWFService with a single line of code.  
 
@@ -81,7 +97,7 @@ Reference `SWFService.SWC` or its individual AS3 source files in your project.
 
 ### Registering an AS3 class instance as a SWF Service
 
-In your SWF's startup logic you would simply register an instance of this AS3 class with SWFService, specifying an arbitrary identifier of your choice:
+In your SWF's startup logic you would simply register an instance of this AS3 class with SWFService, specifying an arbitrary identifier:
 
 ```actionscript	
 import com.codecatalyst.swfservice.SWFService;
@@ -129,7 +145,7 @@ where `MySWF` is the id for the SWF &lt;object&gt; tag in your HTML page, `Video
 
 ### Methods
 
-Using that service proxy object, you can call methods:
+Using that service proxy object, you can call methods on the ActionScript class instance from JavaScript:
 
 ```javascript
 videoPlayerService.play();
@@ -207,6 +223,14 @@ The source code and Flash Builder proejct for the ActionScript service portion o
 Both the client and service projects provide their own ant `build.xml` build scripts.
 
 At the root of the project there is a master ant `build.xml` build script that will execute the build scripts for both the client and service projects and package up a distributable `.zip` of the final builds for both projects and the generated ASDocs documentation.
+
+## Contributors
+
+* [John Yanarella](http://twitter.com/johnyanarella) (Creator)
+
+## Acknowledgements
+
+* [Jason Barry](http://dribbble.com/artifactdesign), who designed SWFService's butler mascot.
 
 ## License
 
