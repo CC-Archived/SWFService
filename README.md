@@ -1,6 +1,5 @@
 <img src="SWFService-mascot.png" width="348" height="512" align="left">
-<div style="height: 40px"></div>
-<img src="SWFService-logo.png" width="390" height="83">
+<br><br><br><img src="SWFService-logo.png" width="390" height="83">
 
 With just a couple lines of code you can:
 
@@ -10,7 +9,7 @@ With just a couple lines of code you can:
 
 on an ActionScript class instance from JavaScript as if it were a native JavaScript object.
 
-<div style="height: 144px"></div>
+<br><br><br><br><br><br><br>
 
 ## About
 
