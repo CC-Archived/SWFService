@@ -14,11 +14,10 @@
 					<li>add and remove event listeners</li>
 				</ul>
 				<p>on an ActionScript class instance from JavaScript as if it were a native JavaScript object.</p>
-				<br>
 			</td>
 		</tr>
 	</table>
-	<br><br>
+	<br><br><br>
 </div>
 
 ## About
