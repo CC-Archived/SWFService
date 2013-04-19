@@ -1,10 +1,18 @@
-# SWFService
+<img src="SWFService-mascot.png" width="348" height="512" align="left">
+<div style="height: 40px"></div>
+<img src="SWFService-logo.png" width="390" height="83">
+
+With just a couple lines of code you can:
+
+* call synchronous and asynchronous methods;
+* get and set properties and accessors, and
+* add and remove event listeners
+
+on an ActionScript class instance from JavaScript as if it were a native JavaScript object.
+
+<div style="height: 144px"></div>
 
 ## About
-
-SWFService allows ActionScript developers to transparently expose an AS3 class instance to JavaScript.
-
-## Why?
 
 The Flash Platform's standard [ExternalInterface](http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/external/ExternalInterface.html) only provides a low level API for communicating across the boundary between ActionScript and JavaScript.  Exposing a typical API using ExternalInterface requires a significant amount of boilerplate code.  Further, ExternalInterface does not provide primitives for supporting more advanced features, such as event dispatching or asynchronous methods calls.
 
@@ -207,6 +215,10 @@ The source code and Flash Builder proejct for the ActionScript service portion o
 Both the client and service projects provide their own ant `build.xml` build scripts.
 
 At the root of the project there is a master ant `build.xml` build script that will execute the build scripts for both the client and service projects and package up a distributable `.zip` of the final builds for both projects and the generated ASDocs documentation.
+
+## Acknowledgements
+
+* [Jason Barry](http://dribbble.com/artifactdesign), who designed the SWFService butler mascot.
 
 ## License
 
