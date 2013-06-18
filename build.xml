@@ -43,7 +43,6 @@
 				<file name="README.md" />
 				<file name="LICENSE" />
 				<file name="SWFService-logo.png" />
-				<file name="SWFService-mascot.png" />
 			</filelist>
 		</copy>
 		<copy todir="${dist.loc}/client">

@@ -1,24 +1,4 @@
-<img src="SWFService-mascot.png" width="348" height="512" align="left">
-<div>
-    <br><br>
-    <!-- Embedded in a table as a workaround for the bullets losing their left padding. -->
-	<table border="0">
-		<tr style="border: none;">
-			<td style="border: none;">
-				<br>
-				<img src="SWFService-logo.png" width="390" height="83"><br><br>
-				<p>With SWFService and just a couple lines of code you can:</p>
-				<ul>
-					<li>call synchronous and asynchronous methods;</li>
-					<li>get and set properties and accessors, and</li>
-					<li>add and remove event listeners</li>
-				</ul>
-				<p>on an ActionScript class instance from JavaScript as if it were a native JavaScript object.</p>
-			</td>
-		</tr>
-	</table>
-	<br><br><br><br>
-</div>
+<img src="SWFService-logo.png" width="700" height="450">
 
 ## About
 
