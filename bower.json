@@ -1,0 +1,15 @@
+{
+  "name": "SWFService",
+  "version": "2.0.0",
+  "main": "dist/client/SWFService.js",
+  "homepage": "https://github.com/CodeCatalyst/SWFService",
+  "authors": [
+    "John Yanarella <jmy@codecatalyst.com>"
+  ],
+  "description": "Instantly access ActionScript in a SWF from JavaScript",
+  "keywords": [
+    "SWF",
+    "ActionScript"
+  ],
+  "license": "MIT"
+}
