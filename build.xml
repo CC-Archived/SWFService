@@ -1,6 +1,6 @@
 <!--
    Suggested Usage:
-      ant clean pacakge
+      ant clean package
    
    The goal of this build the JavaScript client and AS3 service library projects from source code and package them for distribution.
 -->
@@ -36,8 +36,15 @@
 		<ant dir="src/service" inheritAll="false" />
 	</target>
 	
-	<target name="package" depends="build" description="Package for distribution.">
-		
+	<target name="test" depends="build" description="Execute unit tests.">
+		<ant dir="test/src/client" inheritAll="false" />
+		<ant dir="test/src/service" inheritAll="false" />
+		<exec executable="karma" failonerror="true">
+			<arg line="start karma.conf.js --single-run --browsers ${karma.browsers}" />
+		</exec>
+	</target>
+	
+	<target name="package" depends="test" description="Package for distribution.">
 		<copy todir="${dist.loc}">
 			<filelist dir="${basedir}">
 				<file name="README.md" />
@@ -57,7 +64,6 @@
 				<exclude name="**/*.zip" />
 			</zipfileset>
 		</zip>
-		
 	</target>
 
 </project>

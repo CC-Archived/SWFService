@@ -1,0 +1,49 @@
+<!--
+   Suggested Usage:
+      ant clean build
+   
+   The goal of this build is compile the SWFService unit test CoffeeScript source code to JavaScript.
+-->
+<project name="SWFService JavaScript Unit Tests" basedir="." default="build">
+	
+	<!-- Properties -->
+	
+	<property file="${basedir}/build.properties" />
+	
+	<property name="src.coffee.loc" location="${basedir}/coffee" />
+	<property name="bin.js.loc" location="${basedir}/js" />
+	
+	<!-- SDK Tool Configuration -->
+	
+	<condition property="coffeeExecutable" value="coffee.cmd">
+		<os family="windows" />
+	</condition>
+	<condition property="coffeeExecutable" value="coffee">
+		<os family="unix" />
+	</condition>
+	
+	<!-- Targets -->
+	
+	<target name="clean" description="Remove artifacts in build directory from previous builds.">
+		<delete dir="${bin.js.loc}" />
+	</target>
+	
+	<target name="init" description="Initialize build directory.">
+		<echo message="Building ${ant.project.name}"/>
+		
+		<mkdir dir="${bin.js.loc}" />
+	</target>
+	
+	<target name="compile" depends="init" description="Compile the CoffeeScript code to JavaScript.">
+		<echo message="Compiling CoffeeScript..." />
+		<exec dir="${src.coffee.loc}" executable="${coffeeExecutable}" failonerror="true">
+			<arg line="-c -o ${bin.js.loc} ${src.coffee.loc}" />
+		</exec>
+		
+		<!-- Convert EOL characters to match local OS conventions. -->
+		<fixcrlf srcdir="${bin.js.loc}" includes="**/*.js" />
+	</target>
+	
+	<target name="build" depends="compile" description="Build ${ant.project.name}." />
+	
+</project>

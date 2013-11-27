@@ -45,7 +45,7 @@
 	
 	<target name="compile" depends="init" description="Compile the CoffeeScript code to JavaScript.">
 		<echo message="Compiling CoffeeScript..." />
-		<exec dir="${src.loc}" executable="${coffeeExecutable}">
+		<exec dir="${src.loc}" executable="${coffeeExecutable}" failonerror="true">
 			<arg line="-c -o js coffee" />
 		</exec>
 	</target>
@@ -62,7 +62,7 @@
 		</concat>
 		
 		<echo message="Minifying concatenated JavaScript file..." />
-		<exec dir="dist" executable="${yuiCompressorExecutable}">
+		<exec dir="dist" executable="${yuiCompressorExecutable}" failonerror="true">
 			<arg line="${build.filename.debug} -o ${build.filename.deploy} --charset utf-8" />
 		</exec>
 		

@@ -23,7 +23,7 @@
 package com.codecatalyst.swfservice.context.proxy
 {
 	import com.codecatalyst.promise.Promise;
-	import com.codecatalyst.promise.adapters.AsyncTokenAdapter;
+	import com.codecatalyst.promise.adapter.AsyncTokenAdapter;
 	
 	import flash.external.ExternalInterface;
 	
@@ -109,7 +109,7 @@ package com.codecatalyst.swfservice.context.proxy
 			this._methodName = methodName;
 			this._parameters = parameters;
 			
-			Promise.registerAdapter( AsyncTokenAdapter.adapt ); 
+			Promise.registerAdapter( AsyncTokenAdapter.adapt );
 		}
 		
 		// ========================================

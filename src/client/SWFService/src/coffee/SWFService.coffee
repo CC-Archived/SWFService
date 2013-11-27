@@ -99,8 +99,9 @@ class DeferredEntityRegistry
 		@entities.add( entity )
 		entityId = entity[ @entityKeyProperty ]
 		pendingEntityRequests = @pendingEntityRequestsByEntityId[ entityId ]
-		for pendingEntityRequest in pendingEntityRequests
-			pendingEntityRequest.resolve( entity )
+		if pendingEntityRequests?
+			for pendingEntityRequest in pendingEntityRequests
+				pendingEntityRequest.resolve( entity )
 		delete @pendingEntityRequestsByEntityId[ entityId ]
 		return entity
 	
