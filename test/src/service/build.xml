@@ -15,7 +15,6 @@
 	<property name="SWFService.lib.loc" location="${basedir}/../../../src/service/dist/bin" />
 
 	<property name="src.loc" location="${basedir}/Test/src" />
-	<property name="lib.loc" location="${basedir}/Test/lib" />
 	<property name="bin.loc" location="${basedir}/Test/bin" />
 	
 	<!-- SDK Tool Configuration -->
@@ -44,9 +43,6 @@
 			output="${bin.loc}/${build.fileName}.swf"
 			static-rsls="true">
 			
-			<compiler.library-path dir="${lib.loc}" append="true">
-				<include name="*.swc" />
-			</compiler.library-path>
 			<compiler.library-path dir="${SWFService.lib.loc}" append="true">
 				<include name="*.swc" />
 			</compiler.library-path>
