@@ -29,7 +29,7 @@ module.exports = function(config) {
       'test/support/swf.setup.js',
       'test/support/karma.setup.js',
       
-      'src/client/dist/SWFService.js',
+      'dist/client/SWFService.js',
       
       { pattern: 'test/src/service/Test/bin/Test.swf', included: false },
       
