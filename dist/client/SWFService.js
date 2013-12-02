@@ -1,5 +1,5 @@
 /*!
- * [SWFService](http://github.com/CodeCatalyst/SWFService) v2.0.2
+ * [SWFService](http://github.com/CodeCatalyst/SWFService) v2.0.3
  * Copyright (c) 2008-2013 [CodeCatalyst, LLC](http://codecatalyst.com)
  * Open source under the [MIT License](http://en.wikipedia.org/wiki/MIT_License).
  */
@@ -257,8 +257,9 @@
   })();
 
   EntitySet = (function() {
-    function EntitySet(entityClass, entityKeyProperty) {
+    function EntitySet(entityClass, entityName, entityKeyProperty) {
       this.entityClass = entityClass;
+      this.entityName = entityName != null ? entityName : 'entity';
       this.entityKeyProperty = entityKeyProperty != null ? entityKeyProperty : 'id';
       this.entitiesByKey = {};
     }
@@ -266,7 +267,7 @@
     EntitySet.prototype.add = function(entity) {
       var entityKey;
       if (!(entity instanceof this.entityClass)) {
-        throw new Error("Entity must be of type: " + this.entityClass.name + " to be added to this EntitySet.");
+        throw new Error("Entity must be of type: " + this.entityName + " to be added to this EntitySet.");
       }
       entityKey = entity[this.entityKeyProperty];
       if (this.exists(entityKey)) {
@@ -346,10 +347,11 @@
   })();
 
   DeferredEntityRegistry = (function() {
-    function DeferredEntityRegistry(entityClass, entityKeyProperty) {
+    function DeferredEntityRegistry(entityClass, entityName, entityKeyProperty) {
       this.entityClass = entityClass;
+      this.entityName = entityName != null ? entityName : 'entity';
       this.entityKeyProperty = entityKeyProperty != null ? entityKeyProperty : 'id';
-      this.entities = new EntitySet(this.entityClass);
+      this.entities = new EntitySet(this.entityClass, this.entityName, this.entityKeyProperty);
       this.pendingEntityRequestsByEntityId = {};
     }
 
@@ -365,7 +367,7 @@
         deferred = new Deferred();
         if (timeout != null) {
           setTimeout(function() {
-            deferred.reject(new Error("Request for " + _this.entityClass.name + " with " + _this.entityKeyProperty + ": \"" + entityId + "\" timed out."));
+            deferred.reject(new Error("Request for " + _this.entityName + " with " + _this.entityKeyProperty + ": \"" + entityId + "\" timed out."));
           }, timeout);
         }
         if ((_base = this.pendingEntityRequestsByEntityId)[entityId] == null) {
@@ -506,7 +508,7 @@
   SWFServiceContext = (function() {
     function SWFServiceContext(id) {
       this.id = id;
-      this.serviceProxyRegistry = new DeferredEntityRegistry(SWFServiceProxy);
+      this.serviceProxyRegistry = new DeferredEntityRegistry(SWFServiceProxy, 'SWF service proxy');
       this.serviceOperationProxies = new EntitySet(SWFServiceOperationProxy);
       this.serviceEventListenerProxies = new EntitySet(SWFServiceEventListenerProxy);
       return;
