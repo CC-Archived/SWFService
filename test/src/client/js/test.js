@@ -42,6 +42,7 @@
       describe('get()', function() {
         specify('returns a Promise of a reference to a JavaScript proxy for a registered service in the SWF', function() {
           var promise;
+          this.timeout(30000);
           promise = SWFService.get('TestSWF', 'TestService');
           return promise.should.eventually.be.not["null"];
         });
@@ -55,7 +56,7 @@
           var promise;
           this.timeout(500);
           promise = SWFService.get('TestSWF', 'NonExistentService', 250);
-          return promise.should.be.rejectedWith(Error, 'Request for SWFServiceProxy with id: "NonExistentService" timed out.');
+          return promise.should.be.rejectedWith(Error, 'Request for SWF service proxy with id: "NonExistentService" timed out.');
         });
       });
     });

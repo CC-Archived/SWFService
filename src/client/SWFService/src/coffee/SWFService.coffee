@@ -17,12 +17,12 @@ class Timer
 			return @elapsed() > duration
 
 class EntitySet
-	constructor: ( @entityClass, @entityKeyProperty = 'id' ) ->
+	constructor: ( @entityClass, @entityName = 'entity', @entityKeyProperty = 'id' ) ->
 		@entitiesByKey = {}
 	
 	add: ( entity ) ->
 		if ! ( entity instanceof @entityClass )
-			throw new Error( "Entity must be of type: #{ @entityClass.name } to be added to this EntitySet." )
+			throw new Error( "Entity must be of type: #{ @entityName } to be added to this EntitySet." )
 		
 		entityKey = entity[ @entityKeyProperty ]
 		if @exists( entityKey )
@@ -72,8 +72,8 @@ class EntitySet
 		return entities
 
 class DeferredEntityRegistry
-	constructor: ( @entityClass, @entityKeyProperty = 'id' ) ->
-		@entities = new EntitySet( @entityClass )
+	constructor: ( @entityClass, @entityName = 'entity', @entityKeyProperty = 'id' ) ->
+		@entities = new EntitySet( @entityClass, @entityName, @entityKeyProperty )
 		@pendingEntityRequestsByEntityId = {}
 	
 	get: ( entityId, timeout ) ->
@@ -87,7 +87,7 @@ class DeferredEntityRegistry
 			if timeout?
 				setTimeout( 
 					=>
-						deferred.reject( new Error( "Request for #{ @entityClass.name } with #{ @entityKeyProperty }: \"#{ entityId }\" timed out." ) )
+						deferred.reject( new Error( "Request for #{ @entityName } with #{ @entityKeyProperty }: \"#{ entityId }\" timed out." ) )
 						return
 					timeout
 				)
@@ -158,7 +158,7 @@ class SWFServiceEventListenerProxy
 
 class SWFServiceContext
 	constructor: ( @id ) ->
-		@serviceProxyRegistry = new DeferredEntityRegistry( SWFServiceProxy )
+		@serviceProxyRegistry = new DeferredEntityRegistry( SWFServiceProxy, 'SWF service proxy' )
 		@serviceOperationProxies = new EntitySet( SWFServiceOperationProxy )
 		@serviceEventListenerProxies = new EntitySet( SWFServiceEventListenerProxy )
 		return
