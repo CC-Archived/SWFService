@@ -14,12 +14,13 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      'node_modules/mocha-as-promised/mocha-as-promised.js',
+      'node_modules/chai/chai.js',
+      'node_modules/chai-as-promised/lib/chai-as-promised.js',
+      'node_modules/sinon/pkg/sinon.js',
+      'node_modules/sinon-chai/lib/sinon-chai.js',
+      
       'bower_components/jquery/jquery.js',
-      'bower_components/mocha-as-promised/mocha-as-promised.js',
-      'bower_components/chai/chai.js',
-      'bower_components/chai-as-promised/lib/chai-as-promised.js',
-      'bower_components/sinonjs/sinon.js',
-      'bower_components/sinon-chai/lib/sinon-chai.js',
       'bower_components/swfobject/swfobject/swfobject.js',
       { pattern: 'bower_components/swfobject/swfobject/expressInstall.swf', included: false },
       

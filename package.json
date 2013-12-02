@@ -1,0 +1,33 @@
+{
+  "name": "SWFService",
+  "version": "2.0.3",
+  "main": "dist/client/SWFService.js",
+  "homepage": "https://github.com/CodeCatalyst/SWFService",
+  "author": "John Yanarella <jmy@codecatalyst.com>",
+  "description": "Instantly access ActionScript in a SWF from JavaScript",
+  "keywords": [
+    "SWF",
+    "ActionScript"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/CodeCatalyst/SWFService.git"
+  },
+  "bugs": {
+    "url": "https://github.com/CodeCatalyst/SWFService/issues"
+  },
+  "devDependencies": {
+    "coffee-script": "~1.6.3",
+    "karma": "~0.10.7",
+    "karma-mocha": "~0.1.1",
+    "karma-sauce-launcher": "~0.1.5",
+    "mocha": "~1.14.0",
+    "mocha-as-promised": "~1.4.1",
+    "chai": "~1.8.1",
+    "chai-as-promised": "~4.1.0",
+    "sinon": "~1.7.3",
+    "sinon-chai": "~2.4.0",
+    "bower": "~1.2.8"
+  }
+}
