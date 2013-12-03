@@ -116,16 +116,28 @@ module.exports = function(config) {
         browserName: 'internet explorer',
         platform: 'windows 8.1',
         version: '11'
+      },
+      
+      // Safari 5
+      
+      sl_safari5: {
+        base: 'SauceLabs',
+        browserName: 'safari',
+        platform: 'Mac 10.6',
+        version: "5"
+      },
+      
+      // Safari 6
+      
+      sl_safari6: {
+        base: 'SauceLabs',
+        browserName: 'safari',
+        platform: 'Mac 10.8',
+        version: "6"
       }
     },
 
-    browsers: [
-      'sl_firefox',
-      'sl_chrome',
-      'sl_ie9',
-      'sl_ie10',
-      'sl_ie11'
-    ],
+    browsers: [],
 
     // If browser does not capture in given timeout [ms], kill it
     captureTimeout: 120000,
