@@ -67,6 +67,7 @@ module.exports = function(config) {
     // Sauce Labs configuration
     sauceLabs: {
       testName: 'SWFService Unit Tests',
+      tunnelIdentifier: process.env.TRAVIS_JOB_RUNNER,
       recordVideo: false,
       recordScreenshots: false
     },
