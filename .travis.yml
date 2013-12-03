@@ -7,4 +7,5 @@ env:
         - secure: "GzkJpbTEpvhVjBwA2m9zlB6KWtfnejr6OaFrHm44zEcWyjnRcmEDcTnoBZ5DqQo5awozkrswomQxijETp1CnMPkSFxDPa3rs/IUwdhkzX/FQA1G8DxrvnVDgcKg5wDin2TNDCA020Hb5TP6C4Xu9ReQqmeE/0exvNlpjoJaSnJc="
 script:
   - "./node_modules/bower/bin/bower install --dev"
-  - "./node_modules/karma/bin/karma start karma-sauce.conf.js"
+  - "./node_modules/karma/bin/karma start karma-sauce-win.conf.js"
+  - "./node_modules/karma/bin/karma start karma-sauce-mac.conf.js"
