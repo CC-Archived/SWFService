@@ -72,7 +72,8 @@ module.exports = function(config) {
       testName: 'SWFService Unit Tests',
       tunnelIdentifier: process.env.TRAVIS_JOB_RUNNER,
       recordVideo: false,
-      recordScreenshots: false
+      recordScreenshots: false,
+      startConnect: false // started via the Travis Sauce Connect addon - see: .travis.yaml
     },
     customLaunchers: {
       // Firefox
