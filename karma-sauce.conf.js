@@ -72,7 +72,20 @@ module.exports = function(config) {
       testName: 'SWFService Unit Tests',
       tunnelIdentifier: process.env.TRAVIS_JOB_RUNNER,
       recordVideo: false,
-      recordScreenshots: false
+      recordScreenshots: false,
+      tags: function() {
+        var tags = [];
+        if (process.env.TRAVIS_BRANCH) {
+          tags.push('branch-' + process.env.TRAVIS_BRANCH);
+        }
+        if (process.env.TRAVIS_COMMIT) {
+          tags.push('commit-' + process.env.TRAVIS_COMMIT);
+        }
+        if (process.env.TRAVIS_PULL_REQUEST) {
+          tags.push('pull-request-' + process.env.TRAVIS_PULL_REQUEST);
+        }
+        return tags;
+      }()
     },
     customLaunchers: {
       // Firefox
