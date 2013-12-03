@@ -5,8 +5,6 @@ env:
     global:
         - secure: "Ha6wOUVQJt+QoPwbf2m28JnFym3dPkCb9UXEXx3I6P6UVwGdomYWS5JL1T1nqKz0SMHNKh++sNSHkzhRxhcz7YK8kkeKRmm6suw5eZyvxrNEg/zS2WRDMxaVmaR5l/LMssYOcDw3GUKsugavQtrok3hEdOJa10O6VsX3hiA8AY8="
         - secure: "GzkJpbTEpvhVjBwA2m9zlB6KWtfnejr6OaFrHm44zEcWyjnRcmEDcTnoBZ5DqQo5awozkrswomQxijETp1CnMPkSFxDPa3rs/IUwdhkzX/FQA1G8DxrvnVDgcKg5wDin2TNDCA020Hb5TP6C4Xu9ReQqmeE/0exvNlpjoJaSnJc="
-addons:
-  sauce_connect: true
 script:
   - "./node_modules/bower/bin/bower install --dev"
   # Workaround: individually spawn each remote browser until Karma v0.12.x is released.
