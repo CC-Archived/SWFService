@@ -1,5 +1,7 @@
 <img src="SWFService-logo.png" width="700" height="450">
 
+[![Selenium Test Status](https://saucelabs.com/browser-matrix/swfservice.svg)](https://saucelabs.com/u/swfservice)
+
 ## About
 
 The Adobe Flash Platform's standard [ExternalInterface](http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/external/ExternalInterface.html) only provides a low level API for communicating across the boundary between ActionScript and JavaScript.  Exposing a typical API using ExternalInterface requires a significant amount of boilerplate code.  Further, ExternalInterface does not provide primitives for supporting more advanced features, such as event dispatching or asynchronous methods calls.
