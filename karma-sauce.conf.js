@@ -45,7 +45,10 @@ module.exports = function(config) {
 
     // test results reporter to use
     // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
-    reporters: ['progress'],
+    reporters: [
+      'progress',
+      'saucelabs'
+    ],
 
 
     // web server port
@@ -74,155 +77,67 @@ module.exports = function(config) {
     customLaunchers: {
       // Firefox
       
-      sl_firefox_windows_xp: {
+      sl_firefox: {
         base: 'SauceLabs',
-        browserName: 'firefox',
-        platform: 'windows xp'
-      },
-      sl_firefox_windows_7: {
-        base: 'SauceLabs',
-        browserName: 'firefox',
-        platform: 'windows 7'
-      },
-      sl_firefox_windows_8: {
-        base: 'SauceLabs',
-        browserName: 'firefox',
-        platform: 'windows 8'
-      },
-      sl_firefox_windows_8_1: {
-        base: 'SauceLabs',
-        browserName: 'firefox',
-        platform: 'windows 8.1'
-      },
-      sl_firefox_mac_10_6: {
-        base: 'SauceLabs',
-        browserName: 'firefox',
-        platform: 'Mac 10.6'
+        browserName: 'firefox'
       },
       
       // Chrome
       
-      sl_chrome_windows_xp: {
+      sl_chrome: {
         base: 'SauceLabs',
-        browserName: 'chrome',
-        platform: 'windows xp'
-      },
-      
-      sl_chrome_windows_7: {
-        base: 'SauceLabs',
-        browserName: 'chrome',
-        platform: 'windows 7'
-      },
-      
-      sl_chrome_windows_8: {
-        base: 'SauceLabs',
-        browserName: 'chrome',
-        platform: 'windows 8'
-      },
-      
-      sl_chrome_windows_8_1: {
-        base: 'SauceLabs',
-        browserName: 'chrome',
-        platform: 'windows 8.1'
-      },
-      sl_chrome_mac_10_6: {
-        base: 'SauceLabs',
-        browserName: 'chrome',
-        platform: 'Mac 10.6'
-      },
-      sl_chrome_mac_10_8: {
-        base: 'SauceLabs',
-        browserName: 'chrome',
-        platform: 'Mac 10.8'
+        browserName: 'chrome'
       },
       
       // Internet Explorer 9
       
-      sl_ie9_windows_7: {
+      sl_ie9: {
         base: 'SauceLabs',
         browserName: 'internet explorer',
-        platform: 'windows 7',
         version: '9'
       },
       
       // Internet Explorer 10
       
-      sl_ie10_windows_7: {
+      sl_ie10: {
         base: 'SauceLabs',
         browserName: 'internet explorer',
-        platform: 'windows 7',
-        version: '10'
-      },
-      sl_ie10_windows_8: {
-        base: 'SauceLabs',
-        browserName: 'internet explorer',
-        platform: 'windows 8',
         version: '10'
       },
       
       // Internet Explorer 11
       
-      sl_ie11_windows8_1: {
+      sl_ie11: {
         base: 'SauceLabs',
         browserName: 'internet explorer',
-        platform: 'windows 8.1',
         version: '11'
       },
       
       // Safari 5
       
-      sl_safari5_mac_10_6: {
+      sl_safari5: {
         base: 'SauceLabs',
         browserName: 'safari',
-        platform: 'Mac 10.6',
         version: "5"
       },
       
       // Safari 6
       
-      sl_safari6_mac_10_8: {
+      sl_safari6: {
         base: 'SauceLabs',
         browserName: 'safari',
-        platform: 'Mac 10.8',
         version: "6"
       },
     },
 
     browsers: [
-      // Firefox
-      
-      'sl_firefox_windows_xp',
-      'sl_firefox_windows_7',
-      'sl_firefox_windows_8',
-      'sl_firefox_windows_8_1',
-      'sl_firefox_mac_10_6',
-      
-      // Chrome
-      
-      'sl_chrome_windows_xp',
-      'sl_chrome_windows_7',
-      'sl_chrome_windows_8',
-      'sl_chrome_windows_8_1',
-      'sl_chrome_mac_10_6',
-      'sl_chrome_mac_10_8',
-      
-      // Internet Explorer 9
-      
-      'sl_ie9_windows_7',
-      
-      // Internet Explorer 10
-      
-      'sl_ie10_windows_7',
-      'sl_ie10_windows_8',
-      'sl_ie11_windows8_1',
-      
-      // Safari 5
-      
-      'sl_safari5_mac_10_6',
-      
-      // Safari 6
-      
-      'sl_safari6_mac_10_8'
+      'sl_firefox',
+      'sl_chrome',
+      'sl_ie9',
+      'sl_ie10',
+      'sl_ie11',
+      'sl_safari5',
+      'sl_safari6'
     ],
 
     // If browser does not capture in given timeout [ms], kill it
