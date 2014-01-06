@@ -123,17 +123,22 @@ class SWFServiceProxy
 				args = Array.prototype.slice.call( arguments )
 				return serviceContext.executeServiceMethod( id, methodName, args )
 		
-		for accessor in descriptor.accessors
-			Object.defineProperty( @, accessor.name, 
-				writeable: accessor.access isnt 'readonly'
-				get: createGetter( accessor.name )
-				set: createSetter( accessor.name )
-			)
-		for variable in descriptor.variables
-			Object.defineProperty( @, variable.name, 
-				get: createGetter( variable.name )
-				set: createSetter( variable.name )
-			)
+		# support for IE8 and older browsers where get and set won't work
+		try
+			for accessor in descriptor.accessors
+				Object.defineProperty( @, accessor.name, 
+					writeable: accessor.access isnt 'readonly'
+					get: createGetter( accessor.name )
+					set: createSetter( accessor.name )
+				)
+			for variable in descriptor.variables
+				Object.defineProperty( @, variable.name, 
+					get: createGetter( variable.name )
+					set: createSetter( variable.name )
+				)
+		catch error
+			console.log(error)
+			
 		for method in descriptor.methods
 			@[ method.name ] = createMethod( method.name )
 		
