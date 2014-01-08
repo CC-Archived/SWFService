@@ -137,7 +137,7 @@ class SWFServiceProxy
 					set: createSetter( variable.name )
 				)
 		catch error
-			console.log(error)
+			console?.log?( 'Warning: SWFService properties and getters/setters are only available for browsers that support ECMAScript 5 properties.' )
 			
 		for method in descriptor.methods
 			@[ method.name ] = createMethod( method.name )
