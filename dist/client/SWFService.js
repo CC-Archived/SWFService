@@ -1,5 +1,5 @@
 /*!
- * [SWFService](http://github.com/CodeCatalyst/SWFService) v2.0.3
+ * [SWFService](http://github.com/CodeCatalyst/SWFService) v2.0.4
  * Copyright (c) 2008-2013 [CodeCatalyst, LLC](http://codecatalyst.com)
  * Open source under the [MIT License](http://en.wikipedia.org/wiki/MIT_License).
  */
@@ -404,7 +404,7 @@
 
   SWFServiceProxy = (function() {
     function SWFServiceProxy(serviceContext, id, descriptor) {
-      var accessor, createGetter, createMethod, createSetter, method, variable, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+      var accessor, createGetter, createMethod, createSetter, error, method, variable, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
       this.id = id;
       createGetter = function(propertyName) {
         return function() {
@@ -423,22 +423,31 @@
           return serviceContext.executeServiceMethod(id, methodName, args);
         };
       };
-      _ref = descriptor.accessors;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        accessor = _ref[_i];
-        Object.defineProperty(this, accessor.name, {
-          writeable: accessor.access !== 'readonly',
-          get: createGetter(accessor.name),
-          set: createSetter(accessor.name)
-        });
-      }
-      _ref1 = descriptor.variables;
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        variable = _ref1[_j];
-        Object.defineProperty(this, variable.name, {
-          get: createGetter(variable.name),
-          set: createSetter(variable.name)
-        });
+      try {
+        _ref = descriptor.accessors;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          accessor = _ref[_i];
+          Object.defineProperty(this, accessor.name, {
+            writeable: accessor.access !== 'readonly',
+            get: createGetter(accessor.name),
+            set: createSetter(accessor.name)
+          });
+        }
+        _ref1 = descriptor.variables;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          variable = _ref1[_j];
+          Object.defineProperty(this, variable.name, {
+            get: createGetter(variable.name),
+            set: createSetter(variable.name)
+          });
+        }
+      } catch (_error) {
+        error = _error;
+        if (typeof console !== "undefined" && console !== null) {
+          if (typeof console.log === "function") {
+            console.log('Warning: SWFService properties and getters/setters are only available for browsers that support ECMAScript 5 properties.');
+          }
+        }
       }
       _ref2 = descriptor.methods;
       for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
